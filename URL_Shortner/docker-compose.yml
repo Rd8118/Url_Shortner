@@ -1,0 +1,42 @@
+
+
+services:
+  urlshorter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: urlshorter-container
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./target/urlshorter.jar:/urlshorter.jar
+    command: ["java", "-jar", "/urlshorter.jar"]
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/urlshorter
+      - SPRING_DATASOURCE_USERNAME=root 
+      - SPRING_DATASOURCE_PASSWORD=Akshay
+    depends_on:
+      - mysql-db
+    networks:
+      - app-network
+
+  mysql-db:
+    image: mysql:5.7
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: Akshay
+      MYSQL_DATABASE: urlshorter
+    ports:
+      - ":3306" 
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
